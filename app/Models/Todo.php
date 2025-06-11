@@ -12,10 +12,13 @@ class Todo extends Model
     protected $fillable = [
         'title',
         'description',
-        'completed'
+        'completed',
+        'due_date',
+        'priority'
     ];
 
     protected $casts = [
-        'completed' => 'boolean'
+        'completed' => 'boolean',
+        'due_date' => 'date',
     ];
 }

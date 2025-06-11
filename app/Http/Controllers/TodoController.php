@@ -10,9 +10,25 @@ class TodoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $todos = Todo::latest()->get();
+        $query = Todo::query();
+
+        // Filtering
+        if ($request->filter === 'active') {
+            $query->where('completed', false);
+        } elseif ($request->filter === 'completed') {
+            $query->where('completed', true);
+        }
+
+        // Sorting
+        if ($request->sort === 'priority') {
+            $query->orderByRaw("FIELD(priority, 'high', 'medium', 'low')");
+        } else {
+            $query->orderBy('due_date');
+        }
+
+        $todos = $query->latest()->get();
         return view('todos.index', compact('todos'));
     }
 
@@ -31,7 +47,9 @@ class TodoController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'priority' => 'required|in:low,medium,high',
         ]);
 
         Todo::create($request->all());
@@ -63,7 +81,9 @@ class TodoController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'priority' => 'required|in:low,medium,high',
         ]);
 
         $todo->update($request->all());

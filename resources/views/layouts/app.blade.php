@@ -14,26 +14,24 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            <nav class="bg-white border-b border-gray-100">
+    <body class="font-sans antialiased min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
+        <div class="min-h-screen flex flex-col">
+            <nav class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-gray-200 shadow-md">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
-                        <div class="flex">
-                            <div class="flex-shrink-0 flex items-center">
-                                <a href="{{ route('todos.index') }}" class="text-xl font-bold text-gray-800">
-                                    Todo App
-                                </a>
-                            </div>
+                    <div class="flex justify-between h-16 items-center">
+                        <div class="flex items-center">
+                            <a href="{{ route('todos.index') }}" class="text-2xl font-extrabold text-purple-700 tracking-tight drop-shadow">
+                                <span class="inline-block align-middle">📝</span> Todo App
+                            </a>
                         </div>
                     </div>
                 </div>
             </nav>
 
-            <main class="py-12">
-                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <main class="flex-1 py-12">
+                <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
                     @if (session('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 shadow" role="alert">
                             <span class="block sm:inline">{{ session('success') }}</span>
                         </div>
                     @endif
@@ -41,6 +39,7 @@
                     @yield('content')
                 </div>
             </main>
+            @yield('footer')
         </div>
     </body>
 </html>
