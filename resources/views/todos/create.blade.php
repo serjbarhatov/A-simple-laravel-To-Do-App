@@ -33,23 +33,30 @@
                 <label for="title" class="block text-sm font-medium text-gray-700">
                     Title <span class="text-red-500">*</span>
                 </label>
-                <input type="text" name="title" id="title" value="{{ old('title') }}" 
+                <input type="text" name="title" id="title" value="{{ old('title') }}"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('title') border-red-500 @enderror"
-                    required minlength="3" maxlength="255" placeholder="Enter a descriptive title">
+                    required minlength="3" maxlength="255" placeholder="Enter a descriptive title"
+                    oninput="checkTitleLength()">
+                <p id="title-warning" class="text-xs text-yellow-600 mt-1 hidden">
+                    ⚠️ You have reached the character limit.
+                </p>
                 <p class="text-xs text-gray-500 mt-1">Required. 3–255 characters.</p>
             </div>
 
             <div>
                 <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea name="description" id="description" rows="3" 
+                <textarea name="description" id="description" rows="3"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('description') border-red-500 @enderror"
-                    maxlength="1000" placeholder="Add more details (optional)">{{ old('description') }}</textarea>
+                    maxlength="1000" placeholder="Add more details (optional)" oninput="checkDescriptionLength()">{{ old('description') }}</textarea>
+                <p id="description-warning" class="text-xs text-yellow-600 mt-1 hidden">
+                    ⚠️ You have reached the character limit.
+                </p>
                 <p class="text-xs text-gray-500 mt-1">Optional. Up to 1000 characters.</p>
             </div>
 
             <div>
                 <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
-                <input type="date" name="due_date" id="due_date" value="{{ old('due_date') }}" 
+                <input type="date" name="due_date" id="due_date" value="{{ old('due_date') }}"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('due_date') border-red-500 @enderror"
                     min="{{ date('Y-m-d') }}">
                 <p class="text-xs text-gray-500 mt-1">Optional. Cannot be in the past.</p>
@@ -59,7 +66,7 @@
                 <label for="priority" class="block text-sm font-medium text-gray-700">
                     Priority <span class="text-red-500">*</span>
                 </label>
-                <select name="priority" id="priority" 
+                <select name="priority" id="priority"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('priority') border-red-500 @enderror"
                     required>
                     <option value="">Select Priority</option>
@@ -71,16 +78,36 @@
             </div>
 
             <div class="flex justify-end space-x-4">
-                <a href="{{ route('todos.index') }}" 
+                <a href="{{ route('todos.index') }}"
                     class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Cancel
                 </a>
-                <button type="submit" 
+                <button type="submit"
                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Create Todo
                 </button>
             </div>
         </form>
+        <script>
+        function checkTitleLength() {
+            const input = document.getElementById('title');
+            const warning = document.getElementById('title-warning');
+            if (input.value.length === 255) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+        function checkDescriptionLength() {
+            const input = document.getElementById('description');
+            const warning = document.getElementById('description-warning');
+            if (input.value.length === 1000) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+        </script>
     </div>
 </div>
-@endsection 
+@endsection

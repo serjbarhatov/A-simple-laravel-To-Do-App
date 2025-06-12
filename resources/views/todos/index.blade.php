@@ -49,7 +49,7 @@
                             @endif
                         </h3>
                         @if($todo->description)
-                            <p class="text-gray-600 mt-1">{{ $todo->description }}</p>
+                            <p class="break-all text-gray-600 mt-1">{{ $todo->description }}</p>
                         @endif
                     </div>
                 </div>

@@ -37,7 +37,11 @@
                 </label>
                 <input type="text" name="title" id="title" value="{{ old('title', $todo->title) }}" 
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('title') border-red-500 @enderror"
-                    required minlength="3" maxlength="255" placeholder="Enter a descriptive title">
+                    required minlength="3" maxlength="255" placeholder="Enter a descriptive title"
+                    oninput="checkTitleLength()">
+                <p id="title-warning" class="text-xs text-yellow-600 mt-1 hidden">
+                    ⚠️ You have reached the character limit.
+                </p>
                 <p class="text-xs text-gray-500 mt-1">Required. 3–255 characters.</p>
             </div>
 
@@ -45,7 +49,10 @@
                 <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
                 <textarea name="description" id="description" rows="3" 
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('description') border-red-500 @enderror"
-                    maxlength="1000" placeholder="Add more details (optional)">{{ old('description', $todo->description) }}</textarea>
+                    maxlength="1000" placeholder="Add more details (optional)" oninput="checkDescriptionLength()">{{ old('description', $todo->description) }}</textarea>
+                <p id="description-warning" class="text-xs text-yellow-600 mt-1 hidden">
+                    ⚠️ You have reached the character limit.
+                </p>
                 <p class="text-xs text-gray-500 mt-1">Optional. Up to 1000 characters.</p>
             </div>
 
@@ -83,6 +90,26 @@
                 </button>
             </div>
         </form>
+        <script>
+        function checkTitleLength() {
+            const input = document.getElementById('title');
+            const warning = document.getElementById('title-warning');
+            if (input.value.length === 255) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+        function checkDescriptionLength() {
+            const input = document.getElementById('description');
+            const warning = document.getElementById('description-warning');
+            if (input.value.length === 1000) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+        </script>
     </div>
 </div>
 @endsection 
