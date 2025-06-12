@@ -32,26 +32,35 @@
             @method('PUT')
             
             <div>
-                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                <label for="title" class="block text-sm font-medium text-gray-700">
+                    Title <span class="text-red-500">*</span>
+                </label>
                 <input type="text" name="title" id="title" value="{{ old('title', $todo->title) }}" 
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('title') border-red-500 @enderror"
-                    required>
+                    required minlength="3" maxlength="255" placeholder="Enter a descriptive title">
+                <p class="text-xs text-gray-500 mt-1">Required. 3–255 characters.</p>
             </div>
 
             <div>
                 <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
                 <textarea name="description" id="description" rows="3" 
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('description') border-red-500 @enderror">{{ old('description', $todo->description) }}</textarea>
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('description') border-red-500 @enderror"
+                    maxlength="1000" placeholder="Add more details (optional)">{{ old('description', $todo->description) }}</textarea>
+                <p class="text-xs text-gray-500 mt-1">Optional. Up to 1000 characters.</p>
             </div>
 
             <div>
                 <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
                 <input type="date" name="due_date" id="due_date" value="{{ old('due_date', $todo->due_date) }}" 
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('due_date') border-red-500 @enderror">
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('due_date') border-red-500 @enderror"
+                    min="{{ date('Y-m-d') }}">
+                <p class="text-xs text-gray-500 mt-1">Optional. Cannot be in the past.</p>
             </div>
 
             <div>
-                <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
+                <label for="priority" class="block text-sm font-medium text-gray-700">
+                    Priority <span class="text-red-500">*</span>
+                </label>
                 <select name="priority" id="priority" 
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('priority') border-red-500 @enderror"
                     required>
@@ -60,6 +69,7 @@
                     <option value="medium" {{ old('priority', $todo->priority) == 'medium' ? 'selected' : '' }}>Medium</option>
                     <option value="high" {{ old('priority', $todo->priority) == 'high' ? 'selected' : '' }}>High</option>
                 </select>
+                <p class="text-xs text-gray-500 mt-1">Required. Choose the importance level.</p>
             </div>
 
             <div class="flex justify-end space-x-4">
