@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Todo;
 use Illuminate\Http\Request;
+use App\Http\Requests\TodoRequest;
 
 class TodoController extends Controller
 {
@@ -14,21 +15,33 @@ class TodoController extends Controller
     {
         $query = Todo::query();
 
-        // Filtering
-        if ($request->filter === 'active') {
-            $query->where('completed', false);
-        } elseif ($request->filter === 'completed') {
-            $query->where('completed', true);
+        // Filter by status
+        if ($request->has('status')) {
+            $query->where('completed', $request->status === 'completed');
         }
 
-        // Sorting
-        if ($request->sort === 'priority') {
-            $query->orderByRaw("FIELD(priority, 'high', 'medium', 'low')");
-        } else {
-            $query->orderBy('due_date');
+        // Filter by priority
+        if ($request->has('priority')) {
+            $query->where('priority', $request->priority);
         }
 
-        $todos = $query->latest()->get();
+        // Sort todos
+        $sort = $request->get('sort', 'created_at');
+        $direction = $request->get('direction', 'desc');
+
+        switch ($sort) {
+            case 'due_date':
+                $query->orderBy('due_date', $direction);
+                break;
+            case 'priority':
+                $query->orderByRaw("FIELD(priority, 'high', 'medium', 'low') " . $direction);
+                break;
+            default:
+                $query->orderBy($sort, $direction);
+        }
+
+        $todos = $query->get();
+
         return view('todos.index', compact('todos'));
     }
 
@@ -43,19 +56,12 @@ class TodoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TodoRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'priority' => 'required|in:low,medium,high',
-        ]);
-
-        Todo::create($request->all());
+        Todo::create($request->validated());
 
         return redirect()->route('todos.index')
-            ->with('success', 'Todo created successfully.');
+            ->with('success', 'Todo created successfully!');
     }
 
     /**
@@ -77,19 +83,12 @@ class TodoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Todo $todo)
+    public function update(TodoRequest $request, Todo $todo)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'priority' => 'required|in:low,medium,high',
-        ]);
-
-        $todo->update($request->all());
+        $todo->update($request->validated());
 
         return redirect()->route('todos.index')
-            ->with('success', 'Todo updated successfully.');
+            ->with('success', 'Todo updated successfully!');
     }
 
     /**
@@ -100,16 +99,14 @@ class TodoController extends Controller
         $todo->delete();
 
         return redirect()->route('todos.index')
-            ->with('success', 'Todo deleted successfully.');
+            ->with('success', 'Todo deleted successfully!');
     }
 
     public function toggleComplete(Todo $todo)
     {
-        $todo->update([
-            'completed' => !$todo->completed
-        ]);
+        $todo->update(['completed' => !$todo->completed]);
 
         return redirect()->route('todos.index')
-            ->with('success', 'Todo status updated successfully.');
+            ->with('success', 'Todo status updated successfully!');
     }
 }
