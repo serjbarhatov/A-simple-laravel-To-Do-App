@@ -21,4 +21,8 @@ Route::middleware('auth')->group(function () {
 Route::resource('todos', TodoController::class);
 Route::post('todos/{todo}/toggle-complete', [TodoController::class, 'toggleComplete'])->name('todos.toggle-complete');
 
+Route::get('/test500', function () {
+    abort(500);
+});
+
 require __DIR__.'/auth.php';
