@@ -104,6 +104,14 @@
                             <label for="register-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                             <input id="register-password" type="password" name="password" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                            <div id="password-strength" class="mt-2 hidden">
+                                <div class="flex space-x-1 mb-2">
+                                    <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div id="strength-bar" class="h-full transition-all duration-300"></div>
+                                    </div>
+                                </div>
+                                <p id="strength-text" class="text-sm"></p>
+                            </div>
                             @error('password')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -113,6 +121,19 @@
                             <label for="register-password-confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
                             <input id="register-password-confirmation" type="password" name="password_confirmation" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Password Manager Encouragement -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div>
+                                    <h4 class="text-sm font-medium text-blue-800 mb-1">💡 Security Tip</h4>
+                                    <p class="text-sm text-blue-700">We recommend using a password manager like <strong>Bitwarden</strong>, <strong>1Password</strong>, or <strong>LastPass</strong> to generate and store strong, unique passwords.</p>
+                                </div>
+                            </div>
                         </div>
 
                         <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
@@ -136,6 +157,10 @@
         const registerTab = document.getElementById('register-tab');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
+        const passwordInput = document.getElementById('register-password');
+        const passwordStrength = document.getElementById('password-strength');
+        const strengthBar = document.getElementById('strength-bar');
+        const strengthText = document.getElementById('strength-text');
 
         loginTab.addEventListener('click', () => {
             loginTab.className = 'flex-1 py-2 px-4 rounded-md font-medium transition-all duration-200 bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md';
@@ -150,6 +175,80 @@
             registerForm.classList.remove('hidden');
             loginForm.classList.add('hidden');
         });
+
+        // Password strength checker
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            if (password.length > 0) {
+                passwordStrength.classList.remove('hidden');
+                const strength = checkPasswordStrength(password);
+                updateStrengthIndicator(strength);
+            } else {
+                passwordStrength.classList.add('hidden');
+            }
+        });
+
+        function checkPasswordStrength(password) {
+            let score = 0;
+            let feedback = [];
+
+            // Length check
+            if (password.length >= 12) {
+                score += 2;
+            } else if (password.length >= 8) {
+                score += 1;
+                feedback.push('Add more characters');
+            } else {
+                feedback.push('Password too short');
+            }
+
+            // Character variety checks
+            if (/[A-Z]/.test(password)) score += 1;
+            if (/[a-z]/.test(password)) score += 1;
+            if (/[0-9]/.test(password)) score += 1;
+            if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+            // Additional checks
+            if (password.length > 16) score += 1;
+            if (!/(.)\1{2,}/.test(password)) score += 1; // No repeated characters
+            if (!/(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|123|234|345|456|567|678|789|012|qwe|wer|ert|rty|tyu|yui|uio|iop|asd|sdf|dfg|fgh|ghj|hjk|jkl|zxc|xcv|cvb|vbn|bnm)/i.test(password)) {
+                score += 1; // No sequential characters
+            }
+
+            return { score, feedback };
+        }
+
+        function updateStrengthIndicator(strength) {
+            const { score, feedback } = strength;
+            let color, text, width;
+
+            if (score >= 8) {
+                color = 'bg-green-500';
+                text = 'Very Strong';
+                width = '100%';
+            } else if (score >= 6) {
+                color = 'bg-green-400';
+                text = 'Strong';
+                width = '75%';
+            } else if (score >= 4) {
+                color = 'bg-yellow-400';
+                text = 'Good';
+                width = '50%';
+            } else if (score >= 2) {
+                color = 'bg-orange-400';
+                text = 'Weak';
+                width = '25%';
+            } else {
+                color = 'bg-red-500';
+                text = 'Very Weak';
+                width = '10%';
+            }
+
+            strengthBar.className = `h-full transition-all duration-300 ${color}`;
+            strengthBar.style.width = width;
+            strengthText.textContent = text;
+            strengthText.className = `text-sm ${color.replace('bg-', 'text-')}`;
+        }
 
         @if($errors->has('name') || $errors->has('password_confirmation'))
             registerTab.click();

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\PasswordService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -40,8 +41,23 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
     ];
+
+    /**
+     * Hash the password using our custom service
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = PasswordService::hash($value);
+    }
+
+    /**
+     * Verify password using our custom service
+     */
+    public function verifyPassword($password)
+    {
+        return PasswordService::verify($password, $this->password);
+    }
 
     public function todos()
     {
