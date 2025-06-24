@@ -14,11 +14,17 @@ class Todo extends Model
         'description',
         'completed',
         'due_date',
-        'priority'
+        'priority',
+        'user_id'
     ];
 
     protected $casts = [
         'completed' => 'boolean',
         'due_date' => 'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

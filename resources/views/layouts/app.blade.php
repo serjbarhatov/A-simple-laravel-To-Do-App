@@ -24,6 +24,20 @@
                                 <span class="inline-block align-middle">📝</span> Todo App
                             </a>
                         </div>
+                        <div class="flex items-center space-x-4">
+                            @auth
+                                <span class="text-gray-700">Welcome, {{ auth()->user()->name }}!</span>
+                                <form method="POST" action="{{ route('logout') }}" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-gray-600 hover:text-gray-800 transition">
+                                        Logout
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="text-gray-600 hover:text-gray-800 transition">Login</a>
+                                <a href="{{ route('register') }}" class="text-gray-600 hover:text-gray-800 transition">Register</a>
+                            @endauth
+                        </div>
                     </div>
                 </div>
             </nav>

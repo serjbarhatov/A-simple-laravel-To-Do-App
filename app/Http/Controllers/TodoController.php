@@ -13,7 +13,7 @@ class TodoController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Todo::query();
+        $query = auth()->user()->todos();
 
         // Filter by status
         if ($request->has('status')) {
@@ -58,7 +58,7 @@ class TodoController extends Controller
      */
     public function store(TodoRequest $request)
     {
-        Todo::create($request->validated());
+        $todo = auth()->user()->todos()->create($request->validated());
 
         return redirect()->route('todos.index')
             ->with('success', 'Todo created successfully!');
@@ -77,6 +77,11 @@ class TodoController extends Controller
      */
     public function edit(Todo $todo)
     {
+        // Ensure user can only edit their own todos
+        if ($todo->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         return view('todos.edit', compact('todo'));
     }
 
@@ -85,6 +90,11 @@ class TodoController extends Controller
      */
     public function update(TodoRequest $request, Todo $todo)
     {
+        // Ensure user can only update their own todos
+        if ($todo->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         $todo->update($request->validated());
 
         return redirect()->route('todos.index')
@@ -96,6 +106,11 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo)
     {
+        // Ensure user can only delete their own todos
+        if ($todo->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         $todo->delete();
 
         return redirect()->route('todos.index')
@@ -104,6 +119,11 @@ class TodoController extends Controller
 
     public function toggleComplete(Todo $todo)
     {
+        // Ensure user can only toggle their own todos
+        if ($todo->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         $todo->update(['completed' => !$todo->completed]);
 
         return redirect()->route('todos.index')
